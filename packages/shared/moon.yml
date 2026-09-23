@@ -1,0 +1,9 @@
+$schema: 'https://moonrepo.dev/schemas/project.json'
+
+language: 'typescript'
+layer: 'library'
+stack: 'frontend'
+
+project:
+  title: 'Shared'
+  description: 'Types shared between the web app and the API contract'
