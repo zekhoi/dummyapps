@@ -1,0 +1,5 @@
+bin
+tmp
+Dockerfile*
+.air.toml
+*.log

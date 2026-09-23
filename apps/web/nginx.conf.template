@@ -1,0 +1,34 @@
+server {
+  listen 80;
+  server_name _;
+  root /usr/share/nginx/html;
+
+  # Resolve the API host at request time so nginx starts even if it is down.
+  # NGINX_LOCAL_RESOLVERS is filled from /etc/resolv.conf by the nginx image.
+  resolver ${NGINX_LOCAL_RESOLVERS} valid=10s ipv6=off;
+  set $api_upstream ${API_UPSTREAM};
+
+  location /api/ {
+    proxy_pass $api_upstream;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+
+  # Fingerprinted build assets can be cached forever.
+  location /assets/ {
+    add_header Cache-Control "public, max-age=31536000, immutable";
+    try_files $uri =404;
+  }
+
+  # SPA fallback.
+  location / {
+    add_header Cache-Control "no-cache";
+    try_files $uri $uri/ /index.html;
+  }
+
+  gzip on;
+  gzip_types text/css application/javascript application/json image/svg+xml;
+}

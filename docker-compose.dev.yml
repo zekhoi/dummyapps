@@ -1,0 +1,63 @@
+# Development stack with hot reload: air (Go) + Vite HMR, sources bind-mounted.
+#   docker compose -f docker-compose.dev.yml up --build   → http://localhost:5173
+name: dummyapps-dev
+
+x-db-env: &db-env
+  POSTGRES_USER: ${POSTGRES_USER:-app}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+  POSTGRES_DB: ${POSTGRES_DB:-app}
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment: *db-env
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgres://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@postgres:5432/${POSTGRES_DB:-app}?sslmode=disable
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+    ports:
+      - '${API_PORT:-8080}:8080'
+    volumes:
+      - ./apps/api:/app
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.dev
+    environment:
+      API_PROXY_TARGET: http://api:8080
+      VITE_USE_POLLING: 'true'
+    ports:
+      - '${WEB_PORT:-5173}:5173'
+    volumes:
+      - .:/repo
+      # Keep the container's node_modules; don't shadow them with the host's.
+      - /repo/node_modules
+      - /repo/apps/web/node_modules
+      - /repo/packages/shared/node_modules
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  go-mod-cache:
+  go-build-cache:

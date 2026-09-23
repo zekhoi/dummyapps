@@ -1,0 +1,12 @@
+# Development image: source is bind-mounted; node_modules live in volumes.
+# Build context: repository root.
+FROM node:24-alpine
+ARG PNPM_VERSION=12.6.0
+RUN npm install -g pnpm@${PNPM_VERSION}
+WORKDIR /repo
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json apps/web/
+COPY packages/shared/package.json packages/shared/
+RUN pnpm install --frozen-lockfile --filter web...
+EXPOSE 5173
+CMD ["pnpm", "--filter", "web", "dev", "--host", "0.0.0.0"]

@@ -1,0 +1,13 @@
+**/node_modules
+**/dist
+**/bin
+**/tmp
+**/*.tsbuildinfo
+.moon/cache
+.moon/docker
+.git
+.github
+.env
+.env.*
+!.env.example
+**/*.log
