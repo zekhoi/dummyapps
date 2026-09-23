@@ -1,0 +1,32 @@
+# Tasks inherited by every Go project.
+$schema: 'https://moonrepo.dev/schemas/tasks.json'
+
+inheritedBy:
+  toolchains: ['go']
+
+fileGroups:
+  sources:
+    - '**/*.go'
+    - 'go.mod'
+    - 'go.sum'
+  tests:
+    - '**/*_test.go'
+
+tasks:
+  fmt:
+    description: 'Fail when any Go file is not gofmt-formatted'
+    script: 'test -z "$(gofmt -l .)" || (gofmt -l . && exit 1)'
+    inputs:
+      - '@group(sources)'
+
+  vet:
+    description: 'Run go vet'
+    command: 'go vet ./...'
+    inputs:
+      - '@group(sources)'
+
+  test:
+    description: 'Run Go tests'
+    command: 'go test ./...'
+    inputs:
+      - '@group(sources)'

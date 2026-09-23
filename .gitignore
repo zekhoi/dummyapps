@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+bin/
+tmp/
+*.tsbuildinfo
+
+# moon
+.moon/cache/
+.moon/docker/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+
+# Logs
+*.log
+coverage/

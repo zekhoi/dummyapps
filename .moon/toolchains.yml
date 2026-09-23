@@ -1,0 +1,21 @@
+# https://moonrepo.dev/docs/config/toolchain
+# Versions are pinned in /.prototools and inherited here.
+$schema: 'https://moonrepo.dev/schemas/toolchains.json'
+
+javascript:
+  packageManager: 'pnpm'
+  dependencyVersionFormat: 'workspace'
+  syncProjectWorkspaceDependencies: true
+
+node:
+  versionFromPrototools: true
+
+pnpm:
+  versionFromPrototools: true
+
+typescript:
+  syncProjectReferences: false
+
+go:
+  versionFromPrototools: true
+  workspaces: true

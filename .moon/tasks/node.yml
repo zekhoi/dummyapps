@@ -1,0 +1,25 @@
+# Tasks inherited by every TypeScript project.
+$schema: 'https://moonrepo.dev/schemas/tasks.json'
+
+inheritedBy:
+  toolchains: ['typescript']
+
+fileGroups:
+  sources:
+    - 'src/**/*'
+  configs:
+    - 'package.json'
+    - 'tsconfig*.json'
+    - '*.config.{ts,js,mjs}'
+
+tasks:
+  typecheck:
+    description: 'Type-check with tsc'
+    command: 'tsc --noEmit'
+    # `tsc` alone only maps to the typescript toolchain; add node/pnpm so
+    # dependencies are installed and node_modules/.bin is on PATH.
+    toolchains: ['javascript', 'node', 'pnpm', 'typescript']
+    inputs:
+      - '@group(sources)'
+      - '@group(configs)'
+      - '/tsconfig.base.json'
