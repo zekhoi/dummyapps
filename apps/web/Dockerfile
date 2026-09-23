@@ -2,7 +2,7 @@
 # Build context: repository root (needs pnpm workspace + packages/shared).
 #   docker build -f apps/web/Dockerfile .
 
-FROM node:24-alpine AS build
+FROM node:25-alpine AS build
 ARG PNPM_VERSION=12.6.0
 RUN npm install -g pnpm@${PNPM_VERSION}
 WORKDIR /repo
