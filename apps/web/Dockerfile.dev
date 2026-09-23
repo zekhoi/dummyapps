@@ -1,6 +1,6 @@
 # Development image: source is bind-mounted; node_modules live in volumes.
 # Build context: repository root.
-FROM node:24-alpine
+FROM node:25-alpine
 ARG PNPM_VERSION=12.6.0
 RUN npm install -g pnpm@${PNPM_VERSION}
 WORKDIR /repo
