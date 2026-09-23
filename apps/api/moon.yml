@@ -1,0 +1,36 @@
+# https://moonrepo.dev/docs/config/project
+$schema: 'https://moonrepo.dev/schemas/project.json'
+
+language: 'go'
+layer: 'application'
+stack: 'backend'
+tags: ['api']
+
+project:
+  title: 'API'
+  description: 'Go + Gin HTTP API'
+
+tasks:
+  dev:
+    description: 'Run the API locally'
+    command: 'go run ./cmd/server'
+    preset: 'server'
+
+  build:
+    description: 'Compile the API binary'
+    command: 'go build -trimpath -ldflags "-s -w" -o bin/api ./cmd/server'
+    inputs:
+      - '@group(sources)'
+    outputs:
+      - 'bin/api'
+    env:
+      CGO_ENABLED: '0'
+
+  docker:
+    description: 'Build the production image'
+    # `run` keeps it out of `moon check` / `moon ci`.
+    type: 'run'
+    command: 'docker build -t dummyapps-api:local .'
+    options:
+      cache: false
+      runInCI: false
