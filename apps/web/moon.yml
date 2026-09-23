@@ -1,0 +1,57 @@
+# https://moonrepo.dev/docs/config/project
+$schema: 'https://moonrepo.dev/schemas/project.json'
+
+language: 'typescript'
+layer: 'application'
+stack: 'frontend'
+tags: ['web']
+
+project:
+  title: 'Web'
+  description: 'Vite + React + Tailwind frontend'
+
+dependsOn:
+  - 'shared'
+
+tasks:
+  dev:
+    description: 'Start the Vite dev server (proxies /api to :8080)'
+    command: 'vite'
+    preset: 'server'
+
+  build:
+    description: 'Build the production bundle'
+    command: 'vite build'
+    inputs:
+      - '@group(sources)'
+      - '@group(configs)'
+      - 'index.html'
+      - 'public/**/*'
+    outputs:
+      - 'dist'
+    deps:
+      - 'typecheck'
+
+  preview:
+    description: 'Serve the production build locally'
+    command: 'vite preview'
+    preset: 'server'
+    deps:
+      - 'build'
+
+  test:
+    description: 'Run unit tests'
+    command: 'vitest run'
+    inputs:
+      - '@group(sources)'
+      - '@group(configs)'
+
+  docker:
+    description: 'Build the production image (context is the repo root)'
+    # `run` keeps it out of `moon check` / `moon ci`.
+    type: 'run'
+    command: 'docker build -f apps/web/Dockerfile -t dummyapps-web:local .'
+    options:
+      cache: false
+      runInCI: false
+      runFromWorkspaceRoot: true
